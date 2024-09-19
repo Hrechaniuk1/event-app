@@ -1,4 +1,5 @@
 import createHttpError from "http-errors";
+import axios from "axios";
 
 import {eventCollection} from '../db/models/event.js'
 import { calculatePaginationData } from "../helpers/calculatePaginationData.js";
@@ -39,3 +40,30 @@ export async function patchEvent(id, body) {
     const result = await eventCollection.findByIdAndUpdate(id, {participants: participants}, {new: true})
     return result
 }
+
+
+// ----------------------------------------------
+
+export async function fillTheMDB() {
+    try {
+        axios.defaults.baseURL = 'https://app.ticketmaster.com/discovery/v2/'
+        const params = {
+             apikey: 'RuRWVRksGLePlvWclS0RuiYcoPBC55YM'
+        };
+        const result = await axios.get('/events', {params})
+        const events = result.data._embedded.events
+        const eventsForMDB = events.map(item => ({title: item.name, description: item.promoter.description, eventDate: new Date(item.dates.start.dateTime), organizer: item.promoter.name, idByThirdApi: item.id}))
+        for(const item of eventsForMDB) {
+            const isExist = await eventCollection.findOne({idByThirdApi: item.idByThirdApi})
+            if(!isExist) {
+                await eventCollection.create(item)
+            }
+        }
+        console.log('Documents inserted successfully');
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+
+
