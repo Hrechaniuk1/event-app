@@ -11,7 +11,7 @@ export async function getAllEvents(page, perPage, sortBy, sortOrder) {
 
     const [amount, events] = await Promise.all([
         eventCollection.find().countDocuments(),
-        allEvents.skip(skip).limit(limit).find()
+        allEvents.skip(skip).limit(limit).sort({[sortBy]: sortOrder}).find()
     ])
 
     if (events.length === 0) {
@@ -36,7 +36,6 @@ export async function patchEvent(id, body) {
         if(item.email === newUser) throw createHttpError(422, 'User already registered on this event')
     })
     participants.push(body)
-    console.log(body)
     const result = await eventCollection.findByIdAndUpdate(id, {participants: participants}, {new: true})
     return result
 }
