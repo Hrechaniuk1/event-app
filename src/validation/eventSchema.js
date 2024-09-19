@@ -6,19 +6,24 @@ export const eventSchema = Joi.object({
         'string.min': 'Name must be at least 3 characters long',
         'string.max': 'Name must be at most 20 characters long',
     }),
-    email: Joi.string().email().messages({
+    email: Joi.string().email().required().messages({
         'string.email': 'Should be a valid email address',
         'any.required': 'Email is required',
     }),
     dateOfBirth: Joi.date()
-        .optional()
+        .optional().required()
         .messages({
             'date.base': 'Date of Birth should be a valid date',
         }),
-        howUKnow: Joi.string()
+    howUKnow: Joi.string()
         .valid('Social media', 'Friends', 'Found myself')
         .default('Found myself')
         .messages({
             'any.only': 'How do you know should be one of the following: Social media, Friends, Found myself',
+        }),
+        dateOfRegistration: Joi.date()
+        .optional().required()
+        .messages({
+            'date.base': 'Should be a valid date',
         }),
 });

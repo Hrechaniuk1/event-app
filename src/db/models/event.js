@@ -18,8 +18,13 @@ const participantSchema = new Schema({
         required: true,
         enum: ['Social media', 'Friends', 'Found myself'],
         default: 'Found myself'
+    },
+    dateOfRegistration: {
+        type: Date,
+        required: true,
     }
-});
+ }
+);
 
 const eventSchema = new Schema ({
     title: {
